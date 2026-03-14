@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Idea Graveyard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+text-align:center;
+margin:0;
+padding:20px;
+}
+
+h1{
+color:#ff4d4d;
+}
+
+.sections{
+display:flex;
+justify-content:space-around;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.idea{
+background:#1c1c1c;
+padding:15px;
+margin:10px;
+border-radius:10px;
+width:260px;
+box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+
+input{
+padding:10px;
+margin:5px;
+border-radius:5px;
+border:none;
+}
+
+button{
+padding:8px 15px;
+margin:5px;
+background:#ff4d4d;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#ff7070;
+}
+
+.teamList{
+font-size:13px;
+color:#ccc;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>💀 Idea Graveyard</h1>
+<p>Where failed startup ideas may rise again.</p>
+
+<input type="text" id="search" placeholder="Search ideas..." onkeyup="searchIdeas()">
+
+<div class="sections">
+
+<div>
+<h2>All Failed Ideas</h2>
+<div id="ideas"></div>
+</div>
+
+<div>
+<h2>🔥 Top Revived Ideas</h2>
+<div id="topIdeas"></div>
+</div>
+
+</div>
+
+<h2>Add Failed Startup</h2>
+
+<input id="title" placeholder="Startup Name">
+<input id="reason" placeholder="Why it failed">
+<input id="founded" placeholder="Year Founded">
+<input id="closed" placeholder="Year Closed">
+
+<button onclick="addIdea()">Add Idea</button>
+
+<h2>📊 Failure Analytics</h2>
+<div id="analytics"></div>
+
+<script>
+
+let ideas = [
+{
+title:"Drone Pizza Delivery",
+reason:"Too expensive",
+founded:2018,
+closed:2021,
+votes:4,
+team:[]
+},
+{
+title:"Smart Mirror Shopping",
+reason:"No market demand",
+founded:2017,
+closed:2020,
+votes:2,
+team:[]
+}
+];
+
+function displayIdeas(list = ideas){
+
+let container = document.getElementById("ideas");
+container.innerHTML="";
+
+list.forEach((idea,index)=>{
+
+let teamMembers = idea.team.length ? idea.team.join(", ") : "No collaborators yet";
+
+container.innerHTML += `
+<div class="idea">
+<h3>${idea.title}</h3>
+<p><b>Failure:</b> ${idea.reason}</p>
+<p>📅 ${idea.founded} → ${idea.closed}</p>
+<p>👍 Votes: ${idea.votes}</p>
+
+<p class="teamList">👥 Team: ${teamMembers}</p>
+
+<button onclick="vote(${index})">Revive</button>
+<button onclick="joinTeam(${index})">Join Team</button>
+<button onclick="aiSuggestion('${idea.title}')">AI Suggest</button>
+
+</div>
+`;
+
+});
+
+updateTopIdeas();
+updateAnalytics();
+}
+
+function addIdea(){
+
+let title=document.getElementById("title").value;
+let reason=document.getElementById("reason").value;
+let founded=document.getElementById("founded").value;
+let closed=document.getElementById("closed").value;
+
+ideas.push({
+title,
+reason,
+founded,
+closed,
+votes:0,
+team:[]
+});
+
+displayIdeas();
+}
+
+function vote(index){
+
+ideas[index].votes++;
+displayIdeas();
+}
+
+function joinTeam(index){
+
+let name=prompt("Enter your name to collaborate");
+
+if(name){
+ideas[index].team.push(name);
+displayIdeas();
+}
+
+}
+
+function searchIdeas(){
+
+let keyword=document.getElementById("search").value.toLowerCase();
+
+let filtered=ideas.filter(i=>
+i.title.toLowerCase().includes(keyword)
+);
+
+displayIdeas(filtered);
+}
+
+function updateTopIdeas(){
+
+let top=[...ideas].sort((a,b)=>b.votes-a.votes).slice(0,3);
+
+let container=document.getElementById("topIdeas");
+
+container.innerHTML="";
+
+top.forEach(idea=>{
+
+container.innerHTML+=`
+<div class="idea">
+<h3>${idea.title}</h3>
+<p>👍 ${idea.votes} votes</p>
+</div>
+`;
+
+});
+
+}
+
+function updateAnalytics(){
+
+let reasons={};
+
+ideas.forEach(i=>{
+reasons[i.reason]=(reasons[i.reason]||0)+1;
+});
+
+let container=document.getElementById("analytics");
+
+container.innerHTML="";
+
+for(let r in reasons){
+
+container.innerHTML+=`
+<p>${r}: ${reasons[r]} startups</p>
+`;
+
+}
+
+}
+
+function aiSuggestion(title){
+
+alert("AI suggestion feature coming soon for: "+title);
+
+}
+
+displayIdeas();
+
+</script>
+
+</body>
+</html>
